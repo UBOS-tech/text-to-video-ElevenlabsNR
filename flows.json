@@ -1,0 +1,261 @@
+[
+    {
+        "id": "b0355b92b02d678d",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ce9ebd624c4d793a",
+        "type": "http in",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "url": "/checkVideo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 160,
+        "wires": [
+            [
+                "222a666160b04c04"
+            ]
+        ]
+    },
+    {
+        "id": "222a666160b04c04",
+        "type": "function",
+        "z": "b0355b92b02d678d",
+        "name": "function 254",
+        "func": "\nmsg.url = `https://api.synthesia.io/v2/videos/${msg.payload.id}`\nmsg.headers = {\n    'Authorization': global.get('token'),\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 160,
+        "wires": [
+            [
+                "840c2fa9d194d030"
+            ]
+        ]
+    },
+    {
+        "id": "840c2fa9d194d030",
+        "type": "http request",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 375,
+        "y": 160,
+        "wires": [
+            [
+                "293b811486992596"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "293b811486992596",
+        "type": "http response",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 470,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "6ccd6b383c7d4e3b",
+        "type": "http request",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "method": "POST",
+        "ret": "bin",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 395,
+        "y": 280,
+        "wires": [
+            [
+                "16cb9099cbf8db97"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "16cb9099cbf8db97",
+        "type": "function",
+        "z": "b0355b92b02d678d",
+        "name": "function 251",
+        "func": "msg.url = `https://upload.api.synthesia.io/v2/scriptAudio`\nmsg.headers = {\n    \"Content-Type\": \"audio/mpeg\",\n    \"Authorization\": global.get('token')\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 280,
+        "wires": [
+            [
+                "824839232fb59032"
+            ]
+        ]
+    },
+    {
+        "id": "824839232fb59032",
+        "type": "http request",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 615,
+        "y": 280,
+        "wires": [
+            [
+                "0841cdbccd87e397"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "57b0ec4af76980b2",
+        "type": "function",
+        "z": "b0355b92b02d678d",
+        "name": "function 277",
+        "func": "msg.old = msg.payload\nmsg.url = `https://api.elevenlabs.io/v1/text-to-speech/${msg.payload.voice}`\n\n    msg.headers = {\n        'accept': 'audio/mpeg',\n        'xi-api-key': global.get('token'),\n        'Content-Type': 'application/json'\n    }\n\n    msg.payload = {\n        \"text\": msg.payload.text,\n        \"model_id\": \"eleven_multilingual_v1\",\n        \"voice_settings\": {\n            \"stability\": 0.5,\n            \"similarity_boost\": 0.5\n        }\n    }\n\n    return msg\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 280,
+        "wires": [
+            [
+                "6ccd6b383c7d4e3b"
+            ]
+        ]
+    },
+    {
+        "id": "0841cdbccd87e397",
+        "type": "function",
+        "z": "b0355b92b02d678d",
+        "name": "function 278",
+        "func": "msg.url = `https://api.synthesia.io/v2/videos`\n\nmsg.headers = {\n    'Authorization': global.get('token'),\n    'Content-Type': 'application/json'\n}\n\nmsg.payload = {\n    \"test\": false,\n    \"title\": \"hello\",\n    \"description\": \"hello\",\n    \"visibility\": \"private\",\n    \"input\": [{\n        \"scriptAudio\": msg.payload.id,\n        \"scriptLanguage\": msg.old.lan,\n        \"avatar\": msg.old.avatar,\n        \"avatarSettings\": {\n            \"scale\": 1.0,\n            \"style\": \"rectangular\",\n            \"seamless\": false\n        },\n        \"background\": \"dark_blue\",\n        \"backgroundSettings\": {\n            \"videoSettings\": {\n                \"shortBackgroundContentMatchMode\": \"freeze\",\n                \"longBackgroundContentMatchMode\": \"trim\"\n            }\n        }\n    }],\n    \"soundtrack\": \"urban\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 730,
+        "y": 280,
+        "wires": [
+            [
+                "b16d9e6de3906fd4"
+            ]
+        ]
+    },
+    {
+        "id": "b16d9e6de3906fd4",
+        "type": "http request",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 845,
+        "y": 280,
+        "wires": [
+            [
+                "727d284a78df68b2"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "727d284a78df68b2",
+        "type": "function",
+        "z": "b0355b92b02d678d",
+        "name": "function 279",
+        "func": "if (msg.payload.status === 'in_progress'){\nmsg.payload = {\n    text: `Your video status ${msg.payload.status}. Wait 15 minutes and check it. Your video id: ${msg.payload.id}`,\n    id: msg.payload.id\n}\n}\nelse{\n    msg.payload= {\n        text: `Your video status ${msg.payload.status}. Try again.`   \n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 280,
+        "wires": [
+            [
+                "a9e63bd77eb93220"
+            ]
+        ]
+    },
+    {
+        "id": "a9e63bd77eb93220",
+        "type": "http response",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1110,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "7cee1b44ef593f80",
+        "type": "http in",
+        "z": "b0355b92b02d678d",
+        "name": "",
+        "url": "/createVideo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 280,
+        "wires": [
+            [
+                "57b0ec4af76980b2"
+            ]
+        ]
+    }
+]
